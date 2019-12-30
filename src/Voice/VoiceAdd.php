@@ -42,26 +42,18 @@ class VoiceAdd extends VoiceBase
         $this->url = config('voice.url');
         $this->account = config('voice.account');
         $this->compid = config('voice.compid');
-        $this->task_name = $data['task_name'] ? $data['task_name'] : 'qx'.time();
-        $this->nickname = $data['nickname'] ? $data['nickname'] : '';
-        $this->stime_dt = $data['stime_dt'] ? $data['stime_dt'] : $taskTime['star'];
-        $this->etime_dt = $data['etime_dt'] ? $data['etime_dt'] : $taskTime['end'];
-        $this->type = $data['type'] ? $data['type'] : 3;
-        $this->retry = $data['retry'] ? $data['retry'] : 1;
-        $this->interval = $data['interval'] ? $data['interval'] : 1;
-        $this->max = $data['max'] ? $data['max'] : 1;
-        $this->status = $data['status'] ? $data['status'] : '';
+        $this->task_name = 'qx'.time();
+        $this->stime_dt = $taskTime['star'];
+        $this->etime_dt = $taskTime['end'];
+        $this->type = 3;
+        $this->retry = 1;
+        $this->interval = 1;
+        $this->max = 1;
         $this->phone_url = $data['phone_url'];
         $this->state_url = $data['state_url'] ? $data['state_url'] : 'www.test.com';
         $this->task_state_url = $data['task_state_url'] ? $data['task_state_url'] : 'www.test.com';
-        $this->calldata_url = $data['calldata_url'] ? $data['calldata_url'] : '';
-        $this->extension_phone_url = $data['extension_phone_url'] ? $data['extension_phone_url'] : '';
-        $this->speed = $data['speed'] ? $data['speed'] : 1;
-        $this->prefix = $data['prefix'] ? $data['prefix'] : '';
-        $this->route_num = $data['route_num'] ? $data['route_num'] : '';
-        $this->total_robot_num = $data['total_robot_num'] ? $data['total_robot_num'] :1;
-        $this->worktime_id = $data['worktime_id'] ? $data['worktime_id'] : '';
-        $this->server_id = $data['server_id'] ? $data['server_id'] : '';
+        $this->speed = 1;
+        $this->total_robot_num = 1;
         $this->id = $id = $this->add();
     }
 
