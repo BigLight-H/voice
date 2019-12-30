@@ -1,0 +1,19 @@
+{
+    "name": "wisdom\/callVoice",
+    "description": "A callVoice SDK",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "黄光日",
+            "email": "463817374@qq.com"
+        }
+    ],
+    "require": {
+        "guzzlehttp/guzzle": "^6.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Wisdom\\CallVoice\\": "src"
+        }
+    }
+}
