@@ -15,7 +15,6 @@ class VoiceAdd extends VoiceBase
     protected $compid;           //企业id
     protected $id;               //任务ID
     protected $task_name;        //任务名称 -Y
-    protected $nickname;         //任务别名 -N
     protected $stime_dt;         //任务开始时间 -Y
     protected $etime_dt;         //任务结束时间 -Y
     protected $type;             //任务类型(2表示呼叫坐席分机，3表示机器人外呼) -Y
@@ -26,14 +25,10 @@ class VoiceAdd extends VoiceBase
     protected $phone_url;        //号码获取url -Y
     protected $state_url;        //号码推送状态url -Y
     protected $task_state_url;   //任务状态url -Y
-    protected $calldata_url;     //通话数据获取url -N
-    protected $extension_phone_url;//通话数据获取url -N
     protected $speed;            //外呼系数 -Y
     protected $prefix;           //外呼号码前辍 -N
     protected $route_num;        //转入智能路由号码(机器人外呼时为必传) -Y
     protected $total_robot_num;  //总机器人数 -Y
-    protected $worktime_id;      //外呼时间id -N
-    protected $server_id;        //使用calltask的serverid（yxcalltask1_69/yxcalltask2_69/yxcalltask1_109/yxcalltask2_109） -N
 
     public function __construct($data)
     {
@@ -53,6 +48,7 @@ class VoiceAdd extends VoiceBase
         $this->state_url = $data['state_url'] ? $data['state_url'] : 'www.test.com';
         $this->task_state_url = $data['task_state_url'] ? $data['task_state_url'] : 'www.test.com';
         $this->speed = 1;
+        $this->route_num = $data['route_num'];
         $this->total_robot_num = 1;
         $this->id = $id = $this->add();
     }
@@ -69,7 +65,6 @@ class VoiceAdd extends VoiceBase
             'account' => $this->account,
             'compid' => $this->compid,
             'task_name' => $this->task_name,
-            'nickname' => $this->nickname,
             'stime_dt' => $this->stime_dt,
             'etime_dt' => $this->etime_dt,
             'type' => $this->type,
@@ -80,14 +75,10 @@ class VoiceAdd extends VoiceBase
             'phone_url' => $this->phone_url,
             'state_url' => $this->state_url,
             'task_state_url' => $this->task_state_url,
-            'calldata_url' => $this->calldata_url,
-            'extension_phone_url' => $this->extension_phone_url,
             'speed' => $this->speed,
             'prefix' => $this->prefix,
             'route_num' => $this->route_num,
             'total_robot_num' => $this->total_robot_num,
-            'worktime_id' => $this->worktime_id,
-            'server_id' => $this->server_id
         ];
         $this->checkParamsExists($arr, EssentialParameter::$addParament);//检测必要参数是否齐全
         $form_params = $this->getSign($arr, $this->key);//签名生成

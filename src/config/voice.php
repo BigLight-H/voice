@@ -9,5 +9,5 @@ return [
     'key' => env('VOICE_KEY', ''),
     'url' => env('VOICE_PHONE_URL', ''),
     'account' => env('VOICE_ACCOUNT', ''),
-    'compid' => env('VOICE_COMPID', '')
+    'compid' => env('VOICE_COMPID', ''),
 ];
