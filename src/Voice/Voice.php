@@ -7,7 +7,7 @@ namespace Wisdom\CallVoice\Voice;
 use Wisdom\CallVoice\Exceptions\HttpException;
 use Wisdom\CallVoice\Parameter\EssentialParameter;
 
-class VoiceAdd extends VoiceBase
+class Voice extends VoiceBase
 {
     protected $key;              //签名
     protected $url;              //API-URL
