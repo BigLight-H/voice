@@ -33,10 +33,10 @@ class Voice extends VoiceBase
     public function __construct($data)
     {
         $taskTime = $this->taskTime();
-        $this->key = config('voice.key');
-        $this->url = config('voice.url');
-        $this->account = config('voice.account');
-        $this->compid = config('voice.compid');
+        $this->key = env('VOICE_KEY', '');
+        $this->url = env('VOICE_PHONE_URL', '');
+        $this->account = env('VOICE_ACCOUNT', '');
+        $this->compid = env('VOICE_COMPID', '');
         $this->task_name = 'qx'.time();
         $this->stime_dt = $taskTime['star'];
         $this->etime_dt = $taskTime['end'];
