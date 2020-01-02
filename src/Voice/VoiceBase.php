@@ -12,11 +12,17 @@ class VoiceBase
 
     protected $guzzleOptions = [];
 
+    /**
+     * @return Client
+     */
     public function getHttpClient()
     {
         return new Client($this->guzzleOptions);
     }
 
+    /**
+     * @param array $options
+     */
     public function setGuzzleOptions(array $options)
     {
         $this->guzzleOptions = $options;
@@ -56,23 +62,44 @@ class VoiceBase
      * @param $key
      * @return array
      */
-    public function getSign($arr, $key)
+    public function getSign($arr, $k)
     {
-        $str = 'post&';
+        ksort($arr);
+        $str = 'POST&';
         $arr = array_filter($arr);
         foreach ($arr as $key=>$val) {
             $str .= $key.'='.$val.'&';
         }
-        $str .= $key;
+        $str .= $k;
         $sign = md5($str);
         $arr['sign'] = $sign;
         return $arr;
     }
 
+    /**
+     * 当前时间加一年
+     * @return mixed
+     */
     public function taskTime()
     {
         $data['star'] = date('Y-m-d H:i:s', time());
         $data['end'] =  date('Y-m-d H:i:s', strtotime("+1 year"));
         return $data;
+    }
+
+    /**
+     * 添加数组转字符串中间的空格
+     * @param $arr
+     * @return string
+     */
+    public function addSpaces($arr)
+    {
+        $str = '[';
+        $endStr = ']';
+        foreach ($arr as $v) {
+            $str .= $v.', ';
+        }
+        $string = trim($str, ', ').$endStr;
+        return $string;
     }
 }

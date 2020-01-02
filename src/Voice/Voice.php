@@ -29,6 +29,7 @@ class Voice extends VoiceBase
     protected $prefix;           //外呼号码前辍 -N
     protected $route_num;        //转入智能路由号码(机器人外呼时为必传) -Y
     protected $total_robot_num;  //总机器人数 -Y
+    protected $hearder;          //json
 
     public function __construct($data)
     {
@@ -47,14 +48,15 @@ class Voice extends VoiceBase
         $this->phone_url = $data['phone_url'];
         $this->state_url = $data['state_url'] ? $data['state_url'] : 'www.test.com';
         $this->task_state_url = $data['task_state_url'] ? $data['task_state_url'] : 'www.test.com';
-        $this->speed = 1;
+        $this->speed = 1.1;
         $this->route_num = $data['route_num'];
         $this->total_robot_num = 1;
-        $this->id = $id = $this->add();
+        $this->hearder = ['headers' => [ 'Content-Type' => 'application/json' ]];
+        $this->id = $this->add();
     }
 
     /**
-     * @return string
+     * @return mixed
      * @throws HttpException
      * @throws \Wisdom\CallVoice\Exceptions\InvalidArgumentException
      */
@@ -81,20 +83,19 @@ class Voice extends VoiceBase
             'total_robot_num' => $this->total_robot_num,
         ];
         $this->checkParamsExists($arr, EssentialParameter::$addParament);//检测必要参数是否齐全
+
         $form_params = $this->getSign($arr, $this->key);//签名生成
         try {
             $response = $this->getHttpClient()->post($url, [
-                'form_params' => $form_params,
+                'headers' => $this->hearder,
+                'body' => json_encode($form_params)
             ])->getBody()->getContents();
         } catch (\Exception $e) {
             throw new HttpException($e->getMessage(), $e->getCode(), $e);
         }
-
+        $this->pushError($response, '添加任务失败!');
         $response = json_decode($response, true);
-        if ($response['code'] == 1) {
-            $this->id = $response['id'];
-        }
-        $this->id = '';
+        return $response['id'];
     }
 
     /**
@@ -116,12 +117,13 @@ class Voice extends VoiceBase
         $this->checkParamsExists($form_params, EssentialParameter::$starParament);
         try {
             $response = $this->getHttpClient()->post($url, [
-                'form_params' => $form_params,
+                'headers' => $this->hearder,
+                'body' => json_encode($form_params)
             ])->getBody()->getContents();
         } catch (\Exception $e) {
             throw new HttpException($e->getMessage(), $e->getCode(), $e);
         }
-
+        $this->pushError($response, '开启任务失败!');
         return json_decode($response);
     }
 
@@ -139,17 +141,19 @@ class Voice extends VoiceBase
             'account' => $this->account,
             'compid' => $this->compid,
             'task_id' => $id,
-            'disphone_id' => $disphone_id
+            'disphone_id' => $this->addSpaces($disphone_id)
         ];
         $form_params = $this->getSign($arr, $this->key);//签名生成
+        $form_params['disphone_id'] = $disphone_id;
         try {
             $response = $this->getHttpClient()->post($url, [
-                'form_params' => $form_params,
+                'headers' => $this->hearder,
+                'body' => json_encode($form_params)
             ])->getBody()->getContents();
         } catch (\Exception $e) {
             throw new HttpException($e->getMessage(), $e->getCode(), $e);
         }
-        return $response;
+        $this->pushError($response, '绑定任务失败!');
     }
 
     /**
@@ -168,7 +172,8 @@ class Voice extends VoiceBase
         $form_params = $this->getSign($arr, $this->key);//签名生成
         try {
             $response = $this->getHttpClient()->post($url, [
-                'form_params' => $form_params,
+                'headers' => $this->hearder,
+                'body' => json_encode($form_params)
             ])->getBody()->getContents();
         } catch (\Exception $e) {
             throw new HttpException($e->getMessage(), $e->getCode(), $e);
@@ -181,5 +186,19 @@ class Voice extends VoiceBase
         }
 
         return $ids;
+    }
+
+    /**
+     * 推送失败错误
+     * @param $res
+     * @param $str
+     * @throws HttpException
+     */
+    public function pushError($res, $str)
+    {
+        $response = json_decode($res, true);
+        if ($response['code'] != 1) {
+            throw new HttpException($str);
+        }
     }
 }
