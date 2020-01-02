@@ -5,6 +5,7 @@ namespace Wisdom\CallVoice\Voice;
 
 
 use GuzzleHttp\Client;
+use Wisdom\CallVoice\Exceptions\HttpException;
 use Wisdom\CallVoice\Exceptions\InvalidArgumentException;
 
 class VoiceBase
@@ -101,5 +102,26 @@ class VoiceBase
         }
         $string = trim($str, ', ').$endStr;
         return $string;
+    }
+
+    /**
+     * 发送http请求
+     * @param $url
+     * @param $data
+     * @return string
+     * @throws HttpException
+     */
+    public function pushHttp($url, $data)
+    {
+        try {
+            $response = $this->getHttpClient()->post($url, [
+                'headers' => ['headers' => [ 'Content-Type' => 'application/json' ]],
+                'body' => json_encode($data)
+            ])->getBody()->getContents();
+        } catch (\Exception $e) {
+            throw new HttpException($e->getMessage(), $e->getCode(), $e);
+        }
+
+        return $response;
     }
 }

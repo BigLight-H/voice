@@ -15,6 +15,7 @@ class Voice extends VoiceBase
     protected $compid;           //企业id
     protected $id;               //任务ID
     protected $task_name;        //任务名称 -Y
+    protected $nickname;         //任务别名 -N
     protected $stime_dt;         //任务开始时间 -Y
     protected $etime_dt;         //任务结束时间 -Y
     protected $type;             //任务类型(2表示呼叫坐席分机，3表示机器人外呼) -Y
@@ -29,7 +30,6 @@ class Voice extends VoiceBase
     protected $prefix;           //外呼号码前辍 -N
     protected $route_num;        //转入智能路由号码(机器人外呼时为必传) -Y
     protected $total_robot_num;  //总机器人数 -Y
-    protected $hearder;          //json
 
     public function __construct($data)
     {
@@ -39,19 +39,19 @@ class Voice extends VoiceBase
         $this->account = env('VOICE_ACCOUNT', '');
         $this->compid = env('VOICE_COMPID', '');
         $this->task_name = 'qx'.time();
+        $this->nickname = array_key_exists('nickname', $data) ? $data['nickname'] : date("mdHis",time()).'外呼';
         $this->stime_dt = $taskTime['star'];
         $this->etime_dt = $taskTime['end'];
-        $this->type = 3;
-        $this->retry = 1;
-        $this->interval = 1;
-        $this->max = 1;
+        $this->type = array_key_exists('type', $data) ? $data['type'] : 3;
+        $this->retry = array_key_exists('retry', $data) ? $data['retry'] : 1;
+        $this->interval = array_key_exists('interval', $data) ? $data['interval'] : 1;
+        $this->max = array_key_exists('max', $data) ? $data['max'] : 1;
         $this->phone_url = $data['phone_url'];
-        $this->state_url = $data['state_url'] ? $data['state_url'] : 'www.test.com';
-        $this->task_state_url = $data['task_state_url'] ? $data['task_state_url'] : 'www.test.com';
+        $this->state_url = array_key_exists('state_url', $data) ? $data['state_url'] : 'www.test.com';
+        $this->task_state_url = array_key_exists('task_state_url', $data) ? $data['task_state_url'] : 'www.test.com';
         $this->speed = 1.1;
         $this->route_num = $data['route_num'];
-        $this->total_robot_num = 1;
-        $this->hearder = ['headers' => [ 'Content-Type' => 'application/json' ]];
+        $this->total_robot_num = array_key_exists('total_robot_num', $data) ? $data['total_robot_num'] : 1;
         $this->id = $this->add();
     }
 
@@ -67,6 +67,7 @@ class Voice extends VoiceBase
             'account' => $this->account,
             'compid' => $this->compid,
             'task_name' => $this->task_name,
+            'nickname' => $this->nickname,
             'stime_dt' => $this->stime_dt,
             'etime_dt' => $this->etime_dt,
             'type' => $this->type,
@@ -83,16 +84,8 @@ class Voice extends VoiceBase
             'total_robot_num' => $this->total_robot_num,
         ];
         $this->checkParamsExists($arr, EssentialParameter::$addParament);//检测必要参数是否齐全
-
         $form_params = $this->getSign($arr, $this->key);//签名生成
-        try {
-            $response = $this->getHttpClient()->post($url, [
-                'headers' => $this->hearder,
-                'body' => json_encode($form_params)
-            ])->getBody()->getContents();
-        } catch (\Exception $e) {
-            throw new HttpException($e->getMessage(), $e->getCode(), $e);
-        }
+        $response = $this->pushHttp($url, $form_params);
         $this->pushError($response, '添加任务失败!');
         $response = json_decode($response, true);
         return $response['id'];
@@ -115,14 +108,7 @@ class Voice extends VoiceBase
         ];
         $form_params = $this->getSign($arr, $this->key);//签名生成
         $this->checkParamsExists($form_params, EssentialParameter::$starParament);
-        try {
-            $response = $this->getHttpClient()->post($url, [
-                'headers' => $this->hearder,
-                'body' => json_encode($form_params)
-            ])->getBody()->getContents();
-        } catch (\Exception $e) {
-            throw new HttpException($e->getMessage(), $e->getCode(), $e);
-        }
+        $response = $this->pushHttp($url, $form_params);
         $this->pushError($response, '开启任务失败!');
         return json_decode($response);
     }
@@ -145,14 +131,7 @@ class Voice extends VoiceBase
         ];
         $form_params = $this->getSign($arr, $this->key);//签名生成
         $form_params['disphone_id'] = $disphone_id;
-        try {
-            $response = $this->getHttpClient()->post($url, [
-                'headers' => $this->hearder,
-                'body' => json_encode($form_params)
-            ])->getBody()->getContents();
-        } catch (\Exception $e) {
-            throw new HttpException($e->getMessage(), $e->getCode(), $e);
-        }
+        $response = $this->pushHttp($url, $form_params);
         $this->pushError($response, '绑定任务失败!');
     }
 
@@ -170,15 +149,7 @@ class Voice extends VoiceBase
             'page_size' => 1000,
         ];
         $form_params = $this->getSign($arr, $this->key);//签名生成
-        try {
-            $response = $this->getHttpClient()->post($url, [
-                'headers' => $this->hearder,
-                'body' => json_encode($form_params)
-            ])->getBody()->getContents();
-        } catch (\Exception $e) {
-            throw new HttpException($e->getMessage(), $e->getCode(), $e);
-        }
-
+        $response = $this->pushHttp($url, $form_params);
         $arr = json_decode($response, true);
         $ids = [];
         foreach ($arr['data'] as $val) {
@@ -189,7 +160,6 @@ class Voice extends VoiceBase
     }
 
     /**
-     * 推送失败错误
      * @param $res
      * @param $str
      * @throws HttpException
