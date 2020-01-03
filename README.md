@@ -38,3 +38,21 @@ $data = [
         ];
 return response()->json($data, 200);
 ```
+#### 响应格式
+```
+code	        int	是	200: 成功，其他失败
+reason	        string	是	失败的具体原因
+isend	        string	是	true表示没有号码再返回；false表示还有号码未呼，请继续获取号码
+nums[].id	string	是	手机或者坐席的唯一标识
+nums[].phone	array	是	号码数组
+nums[].param	string	是	随路数据id
+{
+    "code": 200,
+    "reason": "ok",
+    "isend": "false",
+    "nums":[
+        {"id":"1", "phone":["13611111111"],"param":"1"},
+        {"id":"2", "phone":["13600000000"],"param":"2"}
+    ]
+}
+```
