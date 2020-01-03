@@ -1,28 +1,40 @@
-<h1 align="center"> callVoice </h1>
+## 智能语音推送说明
 
-<p align="center"> A callVoice SDK.</p>
-
-
-## Installing
-
+### 添加配置文件
+>在根目录的.env文件写入推送相关的配置文件
 ```shell
-$ composer require wisdom/callVoice -vvv
+VOICE_KEY=语音key
+VOICE_PHONE_URL=Api连接前缀,例如:http://101.201.196.42:8066/v1/post/
+VOICE_ACCOUNT=帐号(机器人平台分配)
+VOICE_COMPID=企业id
+VOICE_STATE_URL=号码推送状态url
+VOICE_TASK_STATE_URL=任务状态url
 ```
 
-## Usage
+### 1.推送方法1
 
-TODO
-
-## Contributing
-
-You can contribute in one of three ways:
-
-1. File bug reports using the [issue tracker](https://github.com/wisdom/callVoice/issues).
-2. Answer questions or fix bugs on the [issue tracker](https://github.com/wisdom/callVoice/issues).
-3. Contribute new features or update the wiki.
-
-_The code contribution process is not very formal. You just need to make sure that you follow the PSR-0, PSR-1, and PSR-2 coding guidelines. Any new code contributions must be accompanied by unit tests where applicable._
-
-## License
-
-MIT
+```php
+$data['phone_url'] = 需要拨打电话语音的电话获取连接url,例如:'https://enjoycartask-feature-voice-call.enjoyapi.cn/tests';
+$data['route_num'] = 指定此批电话所执行的行为ID,例如:'52000700002';
+(new Voice($data))->start();
+```
+#### 参数说明
+$data['phone_url'] 返回格式为：
+```php
+$data = [
+            'code' => 200,
+            'reason' => 'ok',
+            'isend' => 'true',
+            'nums' => [
+                [
+                    'id'=>1,
+                    'phone'=>[
+                        '18682283663',
+                        '18682286776'
+                    ],
+                    'param'=>1,
+                ]
+            ],
+        ];
+return response()->json($data, 200);
+```

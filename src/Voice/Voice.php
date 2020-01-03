@@ -47,8 +47,8 @@ class Voice extends VoiceBase
         $this->interval = array_key_exists('interval', $data) ? $data['interval'] : 1;
         $this->max = array_key_exists('max', $data) ? $data['max'] : 1;
         $this->phone_url = $data['phone_url'];
-        $this->state_url = array_key_exists('state_url', $data) ? $data['state_url'] : 'www.test.com';
-        $this->task_state_url = array_key_exists('task_state_url', $data) ? $data['task_state_url'] : 'www.test.com';
+        $this->state_url = env('VOICE_STATE_URL', '');
+        $this->task_state_url = env('VOICE_TASK_STATE_URL', '');
         $this->speed = 1.1;
         $this->route_num = $data['route_num'];
         $this->total_robot_num = array_key_exists('total_robot_num', $data) ? $data['total_robot_num'] : 1;
