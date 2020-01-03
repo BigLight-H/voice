@@ -38,7 +38,7 @@ $data = [
         ];
 return response()->json($data, 200);
 ```
-#### 响应格式
+#### 传输电话号码的url的响应格式
 ```
 code	        int	是	200: 成功，其他失败
 reason	        string	是	失败的具体原因
